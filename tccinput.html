@@ -182,6 +182,7 @@
                     $(function () {
                         //文本框获取/失去焦点事件
                         $('.search-input').on('focus', function () {
+                            $('body').scrollTop(0);//让body的scrolltop为0.防止向下滚动部分距离后有问题。
                             $('.search-input').removeClass('text-center');//搜索框文字靠左
                             $('.search-input-icon').removeClass('search-center-icon');//搜索图标靠左
                             $('.search-con').addClass('search-con-active');//搜索框上移
