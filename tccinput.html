@@ -1,0 +1,461 @@
+<html><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link href="./css/restyle.css" rel="stylesheet" type="text/css">
+    <title>房通网</title>
+    <script src="./js/zepto.min.js"></script>
+    <style>
+        .content-head{
+            padding:1.5rem 0 0.5rem 1.5rem;
+            border-top:1px solid #ccc;
+            border-bottom: 1px solid #ccc;
+            font-size:1.6rem;
+            margin-top:4rem;
+            color:#838383;
+        }
+        .bor-bot{
+            border-bottom: 1px solid #ccc;
+        }
+        .group-list-con li{
+            height:6.3rem;
+            background-color: #fff;
+            overflow: hidden;
+        }
+        .group-info{
+            height: 5rem;
+            margin: 1.2rem 0 0 8rem;
+        }
+        .group-info p:first-child{
+            color:#000;
+            font-size: 1.6rem;
+        }
+        .group-info p:last-child{
+            font-size: 1.4rem;
+            color:#838383;
+        }
+
+        /*六边形*/
+        .boxF, .boxS, .boxT
+        {
+            width: 6rem;
+            height: 4.5rem;
+            overflow: hidden;
+        }
+        .boxF, .boxS
+        {
+            visibility: hidden;
+        }
+        .boxF
+        {
+            margin:1rem;
+            float:left;
+            transform: rotate(120deg);
+            -ms-transform: rotate(120deg);
+            -moz-transform: rotate(120deg);
+            -webkit-transform: rotate(120deg);
+        }
+        .boxS
+        {
+            transform: rotate(-60deg);
+            -ms-transform: rotate(-60deg);
+            -moz-transform: rotate(-60deg);
+            -webkit-transform: rotate(-60deg);
+        }
+        .boxT
+        {
+            transform: rotate(-60deg);
+            background: no-repeat 50% center;
+            background-size: 125% auto;
+            -ms-transform: rotate(-60deg);
+            -moz-transform: rotate(-60deg);
+            -webkit-transform: rotate(-60deg);
+            visibility: visible;
+        }
+
+        /*搜索组件*/
+        .search-con{
+            position: absolute;
+            left: 0;
+            top: 4rem;
+            padding:1rem;
+            width:100%;
+            background-color: #f3f4f5;
+            color:#8e8e93;
+            z-index: 998;
+        }
+        .search-con-active{
+            top:0;
+            padding:1rem 4.5rem 1rem 1rem;
+            z-index:9999;
+        }
+        .search-left-con{
+            position: relative;
+        }
+        .search-input{
+            border-radius: 0.5rem;
+            height: 2rem;
+            line-height: 2rem;
+            font-size: 1.5rem;
+            border:none;
+            width:100%;
+            background-color: #fff;
+            padding-left: 3rem;
+            color:#8e8e93;
+        }
+        .transition-zindex{
+            transition: padding,top 0.15s ease-in-out;
+            -webkit-transition: padding,top 0.15s ease-in-out;
+        }
+        .transition{
+            transition: all 0.15s ease-in-out;
+            -webkit-transition: all 0.15s ease-in-out;
+        }
+        .text-center{
+            padding-left:calc(50% - 1rem);
+            padding-left:-webkit-calc(50% - 1rem);
+        }
+        .search-input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 0.5rem;
+            display: block;
+            height: 1.1rem;
+            width: 1.1rem;
+            background: url('images/searchimg.png') no-repeat;
+            background-size: cover;
+        }
+        .search-clear-icon{
+            position: absolute;
+            top:0.3rem;
+            right:0.8rem;
+            width: 1.4rem;
+            height:1.4rem;
+            line-height: 1.2rem;
+            font-size:1.6rem;
+            text-align: center;
+            transform:rotate(45deg);
+            -webkit-transform:rotate(45deg);
+            color:#fff;
+            background-color: #666;
+            border-radius: 4rem;
+            display: none;
+        }
+        .search-center-icon{
+            left:calc(50% - 3rem);
+            left:-webkit-calc(50% - 3rem);
+        }
+        .search-cancle{
+            position: absolute;
+            top:1rem;
+            right:0.5rem;
+            width:4rem;
+            text-align: center;
+            color:#2463b9;
+            font-size: 1.6rem;
+            opacity: 0;
+        }
+        .search-cancle-active{
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+<div class="ww">
+    <div class="wrapper">
+        <div class="hpHeader header">
+            <a href="/index.php?r=site/home">&lt;</a>
+            <a href="javascript:;">小区群</a>
+            <a href="javascript:;"></a>
+            <!--<a id="searchIcon" class="search-icon" href="javascript:;"></a>-->
+        </div>
+        <div class="content">
+            <div class="search-con transition-zindex">
+                <div class="search-left-con">
+                    <input id="searchInput" type="text" class="search-input text-center transition" placeholder="搜索" />
+                    <i class="search-input-icon search-center-icon transition"></i>
+                    <a href="javascript:;" class="search-clear-icon">+</a>
+                </div>
+                <p class="search-cancle transition">取消</p>
+                <script>
+                    $(function () {
+                        //文本框获取/失去焦点事件
+                        $('.search-input').on('focus', function () {
+                            $('.search-input').removeClass('text-center');//搜索框文字靠左
+                            $('.search-input-icon').removeClass('search-center-icon');//搜索图标靠左
+                            $('.search-con').addClass('search-con-active');//搜索框上移
+                            $('.search-cancle').addClass('search-cancle-active');//取消按钮显示
+                            $('.tcc-con').show();//背景层显示
+                            $('body').css('overflow','hidden');//body不可滚动
+
+                            setTimeout(function () {//上移时 z-index要马上变为9999，才会在head之上，慢慢上移不被其遮挡
+                                $('.search-con').removeClass('transition-zindex').addClass('transition');
+                            },150);
+                        }).on('blur', function () {
+                            if(!$('.search-input').val()){
+                                $('.search-input').addClass('text-center');
+                                $('.search-input-icon').addClass('search-center-icon');
+                            }
+                        });
+                        //取消按钮点击事件
+                        $('.search-cancle').on('click',function(){
+                            $('.search-input').val('');//清空input值
+                            $('.search-input').addClass('text-center');//input值居中
+                            $('.search-input-icon').addClass('search-center-icon');//搜索图标居中
+                            $('.search-con').removeClass('search-con-active');//搜索框下移
+                            $('.search-cancle').removeClass('search-cancle-active');//取消按钮隐藏
+                            $('.tcc-con').hide();//背景层隐藏
+                            $('body').css('overflow','auto');//body可滚动
+
+                            setTimeout(function () {//下移时 z-index要缓慢变为998，才会在head之上，慢慢下移不被其遮挡
+                                $('.search-con').removeClass('transition').addClass('transition-zindex');
+                            },150);
+                        });
+
+
+                        var nameArr=['季景沁园','清园春123','爱琴海456','东方明珠789','逐鹿中原158','爱民小区250','杀特马B1','首开知语城','南湖西里','望兴居'];
+
+                        //文本框内容变化事件
+                        $('#searchInput').on('input change', function () {
+                            var value=$(this).val();
+                            if(value){//不为空时
+                                inpuShowHide(false);
+                                var temp=[];
+                                for(var i=0;i<nameArr.length;i++){
+                                    nameArr[i].indexOf(value)>=0?temp.push(nameArr[i]):'';
+                                }
+                                var liArr=[];
+                                for(var i=0;i<temp.length;i++){
+                                    liArr.push('<li><a href="javascript:;">'+temp[i]+'</a></li>');
+                                }
+                                $('#searchResult').html(liArr.join(''));
+                            }else{
+                                inpuShowHide(true);
+                            }
+                        });
+                        //清空文本框数据
+                        $('.search-clear-icon').on('click', function () {
+                            $('#searchInput').val('');
+                            inpuShowHide(true);
+                            $('.search-input').trigger('focus');
+                        });
+                        //文本框内容变化时，其它dom显隐性控制
+                        function inpuShowHide(empty){
+                            if(empty){
+                                $('.search-clear-icon').hide();//清除按钮
+                                $('.near-group').show();//附近小区
+                                $('.search-result').hide();//搜索结果
+
+                            }else{
+                                $('.search-clear-icon').show();
+                                $('.near-group').hide();
+                                $('.search-result').show();
+                            }
+                        }
+                        //点击列表数据
+                        $('.list-con').on('click','li a', function () {
+                            console.log('clicked');
+                        });
+                        //
+                        $('.group-list-con').on('click','li', function () {
+                            alert('list item clicked!');
+                        })
+                    })
+                </script>
+            </div>
+            <div class="content-head">小区群（9）</div>
+            <ul class="group-list-con bor-bot">
+                <li>
+                    <div class="boxF">
+                        <div class="boxS">
+                            <div class="boxT" style="background: url(./images/head1.jpg) no-repeat;background-size: cover;">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="group-info bor-bot">
+                        <p>首开之语城小区群</p>
+                        <p>首开之语城小区群欢迎您</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="boxF">
+                        <div class="boxS">
+                            <div class="boxT" style="background: url(./images/head2.jpg) no-repeat;background-size: cover;">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="group-info bor-bot">
+                        <p>首开之语城小区群2</p>
+                        <p>首开之语城小区群欢迎您2</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="boxF">
+                        <div class="boxS">
+                            <div class="boxT" style="background: url(./images/head3.jpg) no-repeat;background-size: cover;">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="group-info bor-bot">
+                        <p>首开之语城小区群3</p>
+                        <p>首开之语城小区群欢迎您3</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="boxF">
+                        <div class="boxS">
+                            <div class="boxT" style="background: url(./images/head1.jpg) no-repeat;background-size: cover;">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="group-info bor-bot">
+                        <p>首开之语城小区群</p>
+                        <p>首开之语城小区群欢迎您</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="boxF">
+                        <div class="boxS">
+                            <div class="boxT" style="background: url(./images/head2.jpg) no-repeat;background-size: cover;">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="group-info bor-bot">
+                        <p>首开之语城小区群2</p>
+                        <p>首开之语城小区群欢迎您2</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="boxF">
+                        <div class="boxS">
+                            <div class="boxT" style="background: url(./images/head3.jpg) no-repeat;background-size: cover;">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="group-info bor-bot">
+                        <p>首开之语城小区群3</p>
+                        <p>首开之语城小区群欢迎您3</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="boxF">
+                        <div class="boxS">
+                            <div class="boxT" style="background: url(./images/head1.jpg) no-repeat;background-size: cover;">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="group-info bor-bot">
+                        <p>首开之语城小区群</p>
+                        <p>首开之语城小区群欢迎您</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="boxF">
+                        <div class="boxS">
+                            <div class="boxT" style="background: url(./images/head2.jpg) no-repeat;background-size: cover;">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="group-info bor-bot">
+                        <p>首开之语城小区群2</p>
+                        <p>首开之语城小区群欢迎您2</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="boxF">
+                        <div class="boxS">
+                            <div class="boxT" style="background: url(./images/head3.jpg) no-repeat;background-size: cover;">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="group-info">
+                        <p>首开之语城小区群3</p>
+                        <p>首开之语城小区群欢迎您3</p>
+                    </div>
+                </li>
+            </ul>
+
+            <section class="tcc-con">
+                <style>
+                    .tcc-con{
+                        position: absolute;
+                        top:4rem;
+                        left:0;
+                        height:calc(100% - 4rem);
+                        width: 100%;
+                        background-color: rgba(51,51,51,0.5);
+                        overflow-x:hidden;
+                        overflow-y: auto;
+                        display: none;
+                    }
+                </style>
+                <div class="near-group">
+                    <div class="info">附近的小区</div>
+                    <ul id="nearGroup" class="list-con">
+                        <li><a href="javascript:;">季景沁园</a></li>
+                        <li><a href="javascript:;">首开知语城</a></li>
+                        <li><a href="javascript:;">南湖西里</a></li>
+                        <li><a href="javascript:;">望兴居</a></li>
+                    </ul>
+                </div>
+                <div class="search-result">
+                    <div class="info">以下是匹配的小区,请选择</div>
+                    <ul id="searchResult" class="list-con">
+                    </ul>
+                </div>
+                <style>
+                    .info{
+                        color:#666;
+                        font-size:1rem;
+                        padding-left:2%;
+                        background-color: #dddddd;
+                    }
+                    .list-con li{
+                        padding-left: 2%;
+                        border-bottom: 1px solid #ccc;
+                        background-color: #fff;
+                        height:2.5rem;
+                        line-height: 2.5rem;
+                        font-size:1.4rem
+                    }
+                    .list-con li a{
+                        display: block;
+                        color:#333;
+                    }
+                    .search-result{
+                        display: none;
+                    }
+                </style>
+            </section>
+        </div>
+        <!--footer
+        <div class="footer">
+            <ul id="footer" style="border-top:1px solid #e4e4e4;">
+                <li class="loca"><a href="/">首页</a></li>
+                <li class="two"><a href="/index.php?r=cust/buymap/index">地图</a></li>
+                <li class="third"><a href="/index.php?r=cust/home/index">个人中心</a></li>
+                <li class="four"><a href="/index.php?r=calculator/index">更多</a></li>
+            </ul>
+            <script type="text/javascript">
+                if(document.getElementById('footer').getElementsByTagName('li').length > 0) {
+                    objs = document.getElementById('footer').getElementsByTagName('li');
+                    for(var i=0; i<objs.length; i++) {
+                        if(objs[i].getElementsByTagName('a').length > 0) {
+                            objs[i].onclick = function(){
+                                window.location = this.getElementsByTagName('a')[0].href;
+                            };
+                        }
+                    }
+                }
+            </script>		</div>-->
+    </div>
+</div>
+<script>
+    $(function(){
+        $('#searchIcon').on('click', function () {
+            window.location.href='groupSearch.html';
+        })
+    })
+</script>
+</body></html>
