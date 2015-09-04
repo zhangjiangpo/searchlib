@@ -3,9 +3,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <link href="./css/restyle.css" rel="stylesheet" type="text/css">
+    <link href="http://static1.sqtoon.com/ftoonPub/css/mobilePublic.css" rel="stylesheet" type="text/css">
+    <link href="http://static1.sqtoon.com/ftoonPub/css/fangtoonApp.css" rel="stylesheet" type="text/css">
     <title>房通网</title>
-    <script src="./js/zepto.min.js"></script>
+    <script src="http://mobile.fangtoon.com/js/lib/jquery-1.7.2.min.js"></script>
+    <script src="http://static1.sqtoon.com/ftoonApp/js/pj/Mwap.js"></script>
     <style>
         .content-head{
             padding:1.5rem 0 0.5rem 1.5rem;
@@ -79,14 +81,17 @@
             position: absolute;
             left: 0;
             top: 4rem;
-            padding:1rem;
+            padding:0.8rem;
             width:100%;
-            background-color: #f3f4f5;
+            height: 4rem;
+            line-height: 4rem;
+            background-color:#e4e4e4;
             color:#8e8e93;
             z-index: 998;
         }
         .search-con-active{
-            top:0;
+            transform:translateY(-4rem);
+            -webkit-transform:translateY(-4rem);
             padding:1rem 4.5rem 1rem 1rem;
             z-index:9999;
         }
@@ -95,8 +100,8 @@
         }
         .search-input{
             border-radius: 0.5rem;
-            height: 2rem;
-            line-height: 2rem;
+            height: 2.4rem;
+            line-height: 2.4rem;
             font-size: 1.5rem;
             border:none;
             width:100%;
@@ -105,8 +110,8 @@
             color:#8e8e93;
         }
         .transition-zindex{
-            transition: padding,top 0.15s ease-in-out;
-            -webkit-transition: padding,top 0.15s ease-in-out;
+            transition: padding,top,transform 0.15s ease-in-out;
+            -webkit-transition: padding,top,-webkit-transform 0.15s ease-in-out;
         }
         .transition{
             transition: all 0.15s ease-in-out;
@@ -119,16 +124,20 @@
         .search-input-icon {
             position: absolute;
             left: 1rem;
-            top: 0.5rem;
+            top: 0.7rem;
             display: block;
             height: 1.1rem;
             width: 1.1rem;
             background: url('images/searchimg.png') no-repeat;
             background-size: cover;
         }
+        .search-center-icon{
+            left:calc(50% - 3rem);
+            left:-webkit-calc(50% - 3rem);
+        }
         .search-clear-icon{
             position: absolute;
-            top:0.3rem;
+            top:0.5rem;
             right:0.8rem;
             width: 1.4rem;
             height:1.4rem;
@@ -141,29 +150,26 @@
             background-color: #666;
             border-radius: 4rem;
             display: none;
-        }
-        .search-center-icon{
-            left:calc(50% - 3rem);
-            left:-webkit-calc(50% - 3rem);
+            cursor:pointer;
         }
         .search-cancle{
             position: absolute;
-            top:1rem;
+            top:0.2rem;
             right:0.5rem;
             width:4rem;
             text-align: center;
             color:#2463b9;
             font-size: 1.6rem;
-            opacity: 0;
+            display: none;
         }
         .search-cancle-active{
             opacity: 1;
         }
     </style>
 </head>
-<body>
+<body id="htmlbody">
 <div class="ww">
-    <div class="wrapper">
+    <div id="bodyContainer">
         <div class="hpHeader header">
             <a href="/index.php?r=site/home">&lt;</a>
             <a href="javascript:;">小区群</a>
@@ -175,7 +181,7 @@
                 <div class="search-left-con">
                     <input id="searchInput" type="text" class="search-input text-center transition" placeholder="搜索" />
                     <i class="search-input-icon search-center-icon transition"></i>
-                    <a href="javascript:;" class="search-clear-icon">+</a>
+                    <span href="javascript:;" class="search-clear-icon">+</span>
                 </div>
                 <p class="search-cancle transition">取消</p>
                 <script>
@@ -186,10 +192,9 @@
                             $('.search-input').removeClass('text-center');//搜索框文字靠左
                             $('.search-input-icon').removeClass('search-center-icon');//搜索图标靠左
                             $('.search-con').addClass('search-con-active');//搜索框上移
-                            $('.search-cancle').addClass('search-cancle-active');//取消按钮显示
+                            $('.search-cancle').show('fast');//取消按钮显示
                             $('.tcc-con').show();//背景层显示
-                            $('body').css('overflow','hidden');//body不可滚动
-
+                            $('#bodyContainer').css({'overflow':'hidden','height':'100%'});//body不可滚动
                             setTimeout(function () {//上移时 z-index要马上变为9999，才会在head之上，慢慢上移不被其遮挡
                                 $('.search-con').removeClass('transition-zindex').addClass('transition');
                             },150);
@@ -201,20 +206,24 @@
                         });
                         //取消按钮点击事件
                         $('.search-cancle').on('click',function(){
+                            $('.search-clear-icon').hide();//clear按钮隐藏
+                            inpuShowHide(true);
                             $('.search-input').val('');//清空input值
                             $('.search-input').addClass('text-center');//input值居中
                             $('.search-input-icon').addClass('search-center-icon');//搜索图标居中
                             $('.search-con').removeClass('search-con-active');//搜索框下移
-                            $('.search-cancle').removeClass('search-cancle-active');//取消按钮隐藏
+                            $('.search-cancle').hide('fast');//取消按钮隐藏
                             $('.tcc-con').hide();//背景层隐藏
-                            $('body').css('overflow','auto');//body可滚动
-
+                            $('#bodyContainer').css({'overflow':'auto','height':'auto'});//body不可滚动
                             setTimeout(function () {//下移时 z-index要缓慢变为998，才会在head之上，慢慢下移不被其遮挡
                                 $('.search-con').removeClass('transition').addClass('transition-zindex');
                             },150);
                         });
 
-
+                        $('.tcc-con').on('click touchstart touchmove touchend', function (e) {
+                            e.stopPropagation();
+                            //e.preventDefault();
+                        })
                         var nameArr=['季景沁园','清园春123','爱琴海456','东方明珠789','逐鹿中原158','爱民小区250','杀特马B1','首开知语城','南湖西里','望兴居'];
 
                         //文本框内容变化事件
@@ -259,15 +268,21 @@
                             console.log('clicked');
                         });
                         //
-                        $('.group-list-con').on('click','li', function () {
-                            alert('list item clicked!');
+                        $('.group-list-con').on('click','li', function (e) {
+                            alert(Mwap.businessRequest.groupChat);
+                            Mwap.events.trigger(Mwap.businessRequest.groupChat,{
+                                nameSpace:'fangyuanmanage.dev.systoon.com',
+                                groupId:'1587',
+                                feedId:'300330',
+                                backToPrev:true
+                            });
                         })
                     })
                 </script>
             </div>
             <div class="content-head">小区群（9）</div>
-            <ul class="group-list-con bor-bot">
-                <li>
+            <ul id="allgroup" class="group-list-con bor-bot">
+                <li id="group1">
                     <div class="boxF">
                         <div class="boxS">
                             <div class="boxT" style="background: url(./images/head1.jpg) no-repeat;background-size: cover;">
@@ -389,11 +404,32 @@
                         overflow-x:hidden;
                         overflow-y: auto;
                         display: none;
+                        z-index:9991;
                     }
                 </style>
                 <div class="near-group">
                     <div class="info">附近的小区</div>
                     <ul id="nearGroup" class="list-con">
+                        <li><a href="javascript:;">季景沁园</a></li>
+                        <li><a href="javascript:;">首开知语城</a></li>
+                        <li><a href="javascript:;">南湖西里</a></li>
+                        <li><a href="javascript:;">望兴居</a></li>
+                        <li><a href="javascript:;">季景沁园</a></li>
+                        <li><a href="javascript:;">首开知语城</a></li>
+                        <li><a href="javascript:;">南湖西里</a></li>
+                        <li><a href="javascript:;">望兴居</a></li>
+                        <li><a href="javascript:;">季景沁园</a></li>
+                        <li><a href="javascript:;">首开知语城</a></li>
+                        <li><a href="javascript:;">南湖西里</a></li>
+                        <li><a href="javascript:;">望兴居</a></li>
+                        <li><a href="javascript:;">季景沁园</a></li>
+                        <li><a href="javascript:;">首开知语城</a></li>
+                        <li><a href="javascript:;">南湖西里</a></li>
+                        <li><a href="javascript:;">望兴居</a></li>
+                        <li><a href="javascript:;">季景沁园</a></li>
+                        <li><a href="javascript:;">首开知语城</a></li>
+                        <li><a href="javascript:;">南湖西里</a></li>
+                        <li><a href="javascript:;">望兴居</a></li>
                         <li><a href="javascript:;">季景沁园</a></li>
                         <li><a href="javascript:;">首开知语城</a></li>
                         <li><a href="javascript:;">南湖西里</a></li>
@@ -408,17 +444,19 @@
                 <style>
                     .info{
                         color:#666;
-                        font-size:1rem;
-                        padding-left:2%;
+                        font-size:1.5rem;
+                        padding-left:4%;
+                        height: 2.5rem;
+                        line-height: 2.5rem;
                         background-color: #dddddd;
                     }
                     .list-con li{
-                        padding-left: 2%;
+                        padding-left: 4%;
                         border-bottom: 1px solid #ccc;
                         background-color: #fff;
-                        height:2.5rem;
-                        line-height: 2.5rem;
-                        font-size:1.4rem
+                        height:3rem;
+                        line-height: 3rem;
+                        font-size:1.6rem
                     }
                     .list-con li a{
                         display: block;
